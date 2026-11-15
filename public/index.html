@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071322" />
+  <meta name="description" content="Личный монитор свободных дат ДП Документ в Кёльне с push-уведомлениями. Без автоматического бронирования." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/style.css" />
+  <title>Passport Monitor · Köln</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="brand"><div class="brand-symbol" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2.5" width="18" height="19" rx="3"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
+        <div><div class="brand-main">PASSPORT <span>MONITOR</span></div><div class="brand-small">KÖLN · DEUTSCHLAND</div></div>
+      </div>
+      <div class="header-right"><span class="pill"><span class="tiny-pulse"></span> LIVE MONITOR</span><button type="button" id="logoutBtn" class="icon-button hidden" aria-label="Выйти" title="Выйти"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M13 3h7v18h-7"/></svg></button></div>
+    </header>
+
+    <main id="dashboard" class="hidden">
+      <div class="eyebrow"><span class="eyebrow-line"></span> ЛИЧНЫЙ МОНИТОР ЗАПИСИ</div>
+      <h1>Поймайте свою <span class="accent">дату.</span></h1>
+      <p class="lead">Монитор проверяет доступность талонов по расписанию GitHub. Как только появятся свободные даты — вы получите уведомление на телефон.</p>
+
+      <section class="status-panel" aria-label="Текущее состояние">
+        <div class="status-top"><span class="section-label">СТАТУС ЭЛЕКТРОННОЙ ОЧЕРЕДИ</span><span class="small-badge" id="statusBadge">ОЖИДАНИЕ</span></div>
+        <div class="status-body">
+          <div class="radar-wrap"><div class="radar radar-loading" id="radar"><svg viewBox="0 0 60 60" width="54" height="54" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18h30a5 5 0 0 1 5 5v22a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5V23a5 5 0 0 1 5-5z"/><path d="M19 12v12M41 12v12M10 28h40M20 37h6M34 37h6"/></svg></div></div>
+          <div class="status-copy"><h2 id="statusTitle">Проверяем очередь…</h2><p id="statusDescription">Результат появится после первой проверки.</p><div class="checked-at"><span class="checked-dot"></span><span id="lastChecked">Проверка ещё не выполнялась</span></div></div>
+        </div>
+        <div id="datesBox" class="dates-box hidden"><div class="dates-label">ДОСТУПНЫЕ ДАТЫ</div><div id="datesList" class="date-chips"></div></div>
+        <div class="status-bottom"><span id="intervalText">Проверка примерно каждые 15 минут</span><button type="button" id="checkBtn" class="text-action">Обновить статус <span aria-hidden="true">↗</span></button></div>
+      </section>
+
+      <div class="two-columns">
+        <section class="card appointment-card">
+          <div class="card-heading"><div class="card-icon blue-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 14h3M8 17h6"/></svg></div><span>Параметры поиска</span></div>
+          <div class="field-label">ЦЕНТР</div><div class="field-value">🇩🇪 Кёльн, Германия</div><div class="thin-line"></div>
+          <div class="field-label">УСЛУГА</div><div class="field-value service-value">Закордонний паспорт та (або) ID-картка</div><div class="thin-line"></div>
+          <div class="field-label">ИСТОЧНИК</div><a href="https://cologne.pasport.org.ua/solutions/e-queue" target="_blank" rel="noopener noreferrer" class="source-link">Официальная электронная очередь <span>↗</span></a>
+        </section>
+        <section class="card notification-card">
+          <div class="card-heading"><div class="card-icon gold-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></div><span>Уведомления</span></div>
+          <p class="card-description">Получайте push-уведомления даже когда приложение закрыто.</p>
+          <div class="notify-state"><span class="state-indicator" id="notifyDot"></span><span id="notifyText">Не настроены</span></div>
+          <button type="button" id="enablePushBtn" class="primary-button">Включить уведомления <span aria-hidden="true">→</span></button>
+          <button type="button" id="testPushBtn" class="secondary-button hidden">Отправить тестовое уведомление</button>
+        </section>
+      </div>
+
+      <section class="control-card">
+        <div class="control-copy"><h3>Круглосуточный мониторинг</h3><p id="monitorToggleSubtitle">Проверка продолжается на сервере, даже когда телефон заблокирован.</p></div>
+        <button type="button" id="monitorToggle" class="switch" role="switch" aria-label="Включить или выключить мониторинг" aria-checked="true"><span class="switch-knob"></span></button>
+      </section>
+
+      <section class="history-section"><div class="history-header"><h3>История изменений</h3><span>ПОСЛЕДНИЕ СОБЫТИЯ</span></div><div id="historyList" class="history-list"><div class="history-empty">История появится после проверок.</div></div></section>
+      <div class="footer-actions"><button type="button" class="install-button hidden" id="installBtn">＋ Установить приложение на телефон</button><p>Неофициальный личный монитор. Не связан с ДП «Документ». Запись выполняется только вами на официальном сайте.</p></div>
+    </main>
+    <section id="login" class="login-page hidden" aria-label="Войти"><div class="login-card"><div class="login-icon">🔐</div><h1>Ваш монитор<br><span class="accent">под защитой.</span></h1><p>Введите пароль, заданный вами при настройке сервера.</p><form id="loginForm"><label for="password">ПАРОЛЬ ДОСТУПА</label><input id="password" name="password" type="password" minlength="12" required autocomplete="current-password" placeholder="Введите пароль"/><button type="submit" class="primary-button">Открыть монитор →</button></form><div class="login-error hidden" id="loginError" role="alert"></div></div></section>
+    <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <footer class="bottom-footer"><span>DESIGNED FOR PEACE OF MIND</span><span>© PASSPORT MONITOR</span></footer>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

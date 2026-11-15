@@ -1,0 +1,28 @@
+name: Check passport appointments
+on:
+  schedule:
+    # Four checks per hour. GitHub may delay or skip scheduled runs.
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: passport-monitor-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # The project intentionally does not commit node_modules or a package-lock.
+      - run: npm install --omit=dev --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Check and publish result
+        env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          MONITOR_TOKEN: ${{ secrets.MONITOR_TOKEN }}
+        run: node scripts/check.cjs

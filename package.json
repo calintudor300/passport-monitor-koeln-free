@@ -1,0 +1,16 @@
+{
+  "name": "passport-monitor-koeln-free",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Free PWA push + Cloudflare Workers + GitHub Actions Playwright monitor",
+  "scripts": {
+    "monitor": "node scripts/check.cjs",
+    "test": "node --test tests/*.test.cjs",
+    "syntax": "node --check worker.js && node --check public/app.js && node --check public/sw.js && node --check scripts/check.cjs && node --check src/monitor.cjs",
+    "deploy": "wrangler deploy"
+  },
+  "engines": {"node": ">=20"},
+  "dependencies": {"playwright": "1.56.1"},
+  "devDependencies": {"wrangler": "^4.30.0"}
+}
